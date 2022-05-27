@@ -2,7 +2,7 @@
   "name": "anime-app-quasar",
   "version": "0.0.1",
   "description": "Anime app with quasar and vuejs",
-  "productName": "anime-mobile",
+  "productName": "anime-jikan",
   "author": "Humberto Benedito <humbertobenedito@gmail.com>",
   "private": true,
   "scripts": {
