@@ -4,20 +4,24 @@
       <q-toolbar>
         <q-toolbar-title>
           <q-avatar>
-            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg">
+            <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
           </q-avatar>
-           Anime App Jikan
+          {{ appName }}
+        </q-toolbar-title>
+        <q-toolbar-title shrink>
+          <q-icon name="account_circle" size="md" /> {{ userName }}
         </q-toolbar-title>
         <q-btn flat round dense icon="more_vert">
           <q-menu>
             <div class="row no-wrap q-pa-md">
               <div class="column items-center">
                 <q-btn
-                  color="primary"
+                  color="secondary"
                   label="Logout"
                   push
-                  size="sm"
+                  size="md"
                   v-close-popup
+                  @click.prevent="handleLogout"
                 />
               </div>
             </div>
@@ -37,8 +41,19 @@ import { defineComponent } from "vue";
 export default defineComponent({
   name: "MainLayout",
   components: {},
+  data() {
+    return {
+      userName: "Humberto Benedito",
+      appName: "Anime Jikan",
+    };
+  },
   setup() {
     return {};
   },
+  methods: {
+    handleLogout() {
+      this.$router.push('/')
+    }
+  }
 });
 </script>
