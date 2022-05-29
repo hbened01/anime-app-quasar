@@ -1,6 +1,12 @@
 <template>
   <q-page
-    class="bg-primary window-height window-width row justify-center items-center"
+    class="
+      bg-primary
+      window-height window-width
+      row
+      justify-center
+      items-center
+    "
   >
     <div class="column">
       <div class="row">
@@ -87,17 +93,16 @@ export default defineComponent({
     return $q;
   },
   methods: {
-    async handleGoToRegister() {
+    handleGoToRegister() {
       this.$router.push("/register");
     },
     async handleLogin() {
-      this.$backend
+      await this.$backend
         .post("/login", {
           user: this.user,
           password: this.password,
         })
         .then((res) => {
-          console.log(res);
           switch (res.data.success) {
             case true:
               this.$q.notify({
@@ -105,6 +110,8 @@ export default defineComponent({
                 color: "secondary",
                 icon: "thumb_up_alt",
               });
+              // SAVE TOKEN JWT:
+              this.$q.cookies.set("jwt_copy", res.data.token);
               this.$router.push("/home");
               break;
             default:

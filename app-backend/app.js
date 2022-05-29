@@ -1,7 +1,7 @@
 // CONFIG SERVER
-const cors = require('cors');
+const cors = require("cors");
 const express = require("express");
-const dotenv = require('dotenv').config();
+const dotenv = require("dotenv").config();
 const cookieParser = require("cookie-parser");
 const router = require("./routes/router.js");
 
@@ -14,9 +14,11 @@ const config = {
 
 // CONFIG CORS
 const corsOptions = {
-  origin: '*',
-  methods: ['GET','POST','DELETE','UPDATE','PUT','PATCH']
-}
+  // origin: "*",
+  origin: true,
+  credentials: true,
+  methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+};
 
 app.use(cors(corsOptions));
 // app.options('*', cors())
@@ -36,8 +38,7 @@ app.use(express.static("public"));
 app.use(express.json());
 
 // SET COOKIEPARSER
-app.use(cookieParser());
+app.use(cookieParser(process.env.JWT_SECRET));
 
 //  CONFIG ROUTES
 app.use("/", router);
-

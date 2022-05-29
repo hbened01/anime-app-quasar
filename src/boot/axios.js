@@ -7,10 +7,11 @@ import axios from "axios";
 // good idea to move this instance creation inside of the
 // "export default () => {}" function below (which runs individually
 // for each client)
-const api = axios.create({ baseURL: "https://api.jikan.moe/v3/" });
+const api = axios.create({ baseURL: process.env.APP_API_JIKAN });
+
 const backend = axios.create({
-  baseURL: "http://localhost:3000/",
-  withCredentials: false,
+  baseURL: process.env.APP_BACKEND_PATH,
+  withCredentials: true,
   responseType: "json",
   responseEncoding: "utf8",
   crossDomain: true,
