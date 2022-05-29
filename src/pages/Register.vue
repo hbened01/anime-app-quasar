@@ -4,7 +4,7 @@
   >
     <div class="column">
       <div class="row">
-        <h5 class="text-h5 text-white q-my-md">Anime Jikan Access</h5>
+        <h5 class="text-h5 text-white q-my-md">Anime Jikan Register</h5>
       </div>
       <div class="row">
         <q-card square bordered class="q-pa-lg shadow-1">
@@ -26,6 +26,18 @@
                 square
                 filled
                 clearable
+                v-model="name"
+                type="text"
+                label="User Name"
+              >
+                <template v-slot:append>
+                  <q-icon name="drive_file_rename_outline" color="secondary" />
+                </template>
+              </q-input>
+              <q-input
+                square
+                filled
+                clearable
                 v-model="password"
                 type="password"
                 label="Password"
@@ -38,28 +50,28 @@
           </q-card-section>
           <q-card-actions class="q-px-md">
             <q-btn
-              icon="login"
+              icon="save_alt"
               unelevated
               color="positive"
               size="md"
               class="full-width"
-              label="Login"
+              label="Save"
               align="center"
-              @click.prevent="handleLogin"
+              @click.prevent="handleRegister"
             />
           </q-card-actions>
           <q-card-section class="text-center q-pa-none">
-            <p class="text-info">Enter your credentials</p>
+            <p class="text-grey-6">Enter new user</p>
             <q-item
               clickable
               tag="a"
               class="text-primary"
-              @click.prevent="handleGoToRegister"
+              @click.prevent="handleGoToLogin"
             >
               <q-item-section>
-                <q-item-label
-                  ><q-icon name="how_to_reg" /> Create a new user</q-item-label
-                >
+                <q-item-label>
+                  <q-icon name="keyboard_return" /> Return to login!!!
+                </q-item-label>
               </q-item-section>
             </q-item>
           </q-card-section>
@@ -78,26 +90,23 @@ export default defineComponent({
   data() {
     return {
       user: "",
+      name: "",
       password: "",
     };
   },
-  components: {},
   setup() {
     const $q = useQuasar();
     return $q;
   },
   methods: {
-    async handleGoToRegister() {
-      this.$router.push("/login");
-    },
-    async handleLogin() {
+    async handleRegister() {
       this.$backend
-        .post("/login", {
+        .post("/register", {
           user: this.user,
+          name: this.name,
           password: this.password,
         })
         .then((res) => {
-          console.log(res);
           switch (res.data.success) {
             case true:
               this.$q.notify({
@@ -105,7 +114,7 @@ export default defineComponent({
                 color: "secondary",
                 icon: "thumb_up_alt",
               });
-              this.$router.push("/home");
+              this.$router.push("/");
               break;
             default:
               this.$q.notify({
@@ -115,6 +124,9 @@ export default defineComponent({
               break;
           }
         });
+    },
+    async handleGoToLogin() {
+      this.$router.push("/");
     },
   },
 });

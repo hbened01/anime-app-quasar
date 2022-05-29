@@ -8,6 +8,20 @@ import axios from "axios";
 // "export default () => {}" function below (which runs individually
 // for each client)
 const api = axios.create({ baseURL: "https://api.jikan.moe/v3/" });
+const backend = axios.create({
+  baseURL: "http://localhost:3000/",
+  withCredentials: false,
+  responseType: "json",
+  responseEncoding: "utf8",
+  crossDomain: true,
+  headers: {
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE",
+    "Access-Control-Allow-Headers":
+      "Origin, Content-Type, X-Auth-Token, Authorization",
+  },
+});
 
 export default boot(({ app }) => {
   // for use inside Vue files (Options API) through this.$axios and this.$api
@@ -19,6 +33,8 @@ export default boot(({ app }) => {
   app.config.globalProperties.$api = api;
   // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
   //       so you can easily perform requests against your app's API
+
+  app.config.globalProperties.$backend = backend;
 });
 
-export { api };
+export { api, backend };
