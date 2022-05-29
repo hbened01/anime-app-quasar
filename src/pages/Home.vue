@@ -27,12 +27,14 @@ import { defineComponent, ref } from "vue";
 import Card from "components/Card.vue";
 import { api } from "boot/axios";
 import { useQuasar } from "quasar";
+import utils from "./../utils/Utils.vue";
 
 export default defineComponent({
   name: "IndexPage",
   components: {
     Card,
   },
+  mixins: [utils],
   setup() {
     const $q = useQuasar();
     const data = ref(null);
@@ -62,7 +64,7 @@ export default defineComponent({
     };
   },
   created() {
-    this.getDataAnime();
+    this.validateStatus() && this.getDataAnime();
   },
 });
 </script>
