@@ -88,7 +88,7 @@ export default defineComponent({
   },
   methods: {
     async handleGoToRegister() {
-      this.$router.push("/login");
+      this.$router.push("/register");
     },
     async handleLogin() {
       this.$backend
