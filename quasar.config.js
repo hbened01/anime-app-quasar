@@ -63,10 +63,11 @@ module.exports = configure(function (/* ctx */) {
 
       // publicPath: '/',
       // analyze: true,
-      env: {
-        APP_BACKEND_PATH: "http://localhost:3000/",
-        APP_API_JIKAN: "https://api.jikan.moe/v3/",
-      },
+      env: require("dotenv").config().parsed,
+      // env: {
+      //   APP_BACKEND_PATH: "http://localhost:3000/",
+      //   APP_API_JIKAN: "https://api.jikan.moe/v3/",
+      // },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
