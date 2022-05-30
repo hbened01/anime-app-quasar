@@ -64,7 +64,8 @@ export default defineComponent({
     };
   },
   created() {
-    this.validateStatus() && this.getDataAnime();
+    // this.validateStatus();
+    this.getDataAnime();
   },
 });
 </script>

@@ -1,5 +1,8 @@
-import { store } from 'quasar/wrappers'
-import { createStore } from 'vuex'
+import { store } from "quasar/wrappers";
+import { createStore, createLogger } from "vuex";
+import VuexPersistence from "vuex-persist";
+import jikanApp from "./module";
+const localStorage = window.localStorage;
 
 // import example from './module-example'
 
@@ -11,17 +14,26 @@ import { createStore } from 'vuex'
  * async/await or return a Promise which resolves
  * with the Store instance.
  */
+const state = jikanApp.state();
 
 export default store(function (/* { ssrContext } */) {
+  const vuexLocal = new VuexPersistence({
+    key: "AppAnimeJikan",
+    storage: localStorage,
+    reducer: (state) => ({
+      version: state.version,
+    }),
+  });
+
   const Store = createStore({
     modules: {
-      // example
+      jikanApp,
     },
-
     // enable strict mode (adds overhead!)
     // for dev mode and --debug builds only
-    strict: process.env.DEBUGGING
-  })
+    strict: process.env.DEBUGGING,
+    plugins: [createLogger(), vuexLocal.plugin],
+  });
 
-  return Store
-})
+  return Store;
+});

@@ -29,6 +29,7 @@ exports.login = async (req, res) => {
         WHERE
           1 = 1
           AND user = ?
+        LIMIT 1
       `,
         [user],
         async (e, results) => {
@@ -72,7 +73,12 @@ exports.login = async (req, res) => {
             res.status(200).json({
               success: true,
               message: "Access into app success",
-              token: token,
+              params: {
+                name: results[0]?.name,
+                user: results[0]?.user,
+                userId: results[0]?.id,
+                token,
+              },
             });
           }
         }
