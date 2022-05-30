@@ -78,6 +78,7 @@
 <script>
 import { defineComponent } from "vue";
 import { useQuasar } from "quasar";
+import { mapGetters, mapActions } from "vuex";
 
 export default defineComponent({
   name: "Login",
@@ -87,16 +88,21 @@ export default defineComponent({
       password: "",
     };
   },
+  computed: {
+    ...mapGetters('jikanApp',['getState'])
+  },
   components: {},
   setup() {
     const $q = useQuasar();
     return $q;
   },
   methods: {
+    ...mapActions('jikanApp', ['setUpdateVersion']),
     handleGoToRegister() {
       this.$router.push("/register");
     },
     async handleLogin() {
+      console.log()
       await this.$backend
         .post("/login", {
           user: this.user,
@@ -111,8 +117,8 @@ export default defineComponent({
                 icon: "thumb_up_alt",
               });
               // SAVE TOKEN JWT:
-              this.$q.cookies.set("jwt_copy", res.data.token);
-              this.$router.push("/home");
+              this.$q.cookies.set("jwt_bk", res.data.token);
+              // this.$router.push("/home");
               break;
             default:
               this.$q.notify({
@@ -121,6 +127,11 @@ export default defineComponent({
               });
               break;
           }
+        }).catch((e) => {
+          this.$q.notify({
+            message: `${e.response.data.message}`,
+            icon: "report_problem",
+          });
         });
     },
   },
