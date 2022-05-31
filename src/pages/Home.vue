@@ -26,46 +26,66 @@
 import { defineComponent, ref } from "vue";
 import Card from "components/Card.vue";
 import { api } from "boot/axios";
-import { useQuasar } from "quasar";
-import utils from "./../utils/Utils.vue";
+import Utils from "./../utils/Utils.vue";
 
 export default defineComponent({
   name: "IndexPage",
   components: {
     Card,
   },
-  mixins: [utils],
-  setup() {
-    const $q = useQuasar();
-    const data = ref(null);
-    const getDataAnime = () => {
-      api
-        .get("/search/anime?q=naruto")
-        .then((response) => {
-          data.value = response.data.results;
-          $q.notify({
-            position: "top",
-            message: `Data load sucessfully!!!`,
-            type: "positive",
-            icon: "announcement",
-          });
-        })
-        .catch((e) => {
-          $q.notify({
-            message: `${e.message}`,
-            icon: "report_problem",
-          });
-        });
-    };
+  mixins: [Utils],
+  data() {
     return {
-      data,
-      getDataAnime,
+      data: [],
+    };
+  },
+  setup() {
+    return {
       expanded: ref(false),
     };
   },
+  methods: {
+    getDataAnime() {
+      api
+        .get("/search/anime?q=naruto")
+        .then((response) => {
+          this.data = response.data.results;
+          this.sendNotify({
+            key: 0,
+            msg: "Data load sucessfully!!!",
+            type: "positive",
+            icon: "announcement",
+            position: "top",
+          });
+        })
+        .catch((e) => {
+          this.sendNotify({
+            key: 1,
+            msg: `${e.response.data.message}`,
+          });
+        });
+    },
+  },
   created() {
-    // this.validateStatus();
-    this.getDataAnime();
+    this.validateStatus()
+      .then((res) => {
+        switch (res.data.status) {
+          case true:
+            this.getDataAnime();
+            break;
+          default:
+            this.logout().then(() => {
+              this.$router.push("/");
+            })
+            break;
+        }
+      })
+      .catch((e) => {
+        this.sendNotify({
+          key: 1,
+          msg: `${e.response.data.message}`,
+        });
+      });
   },
 });
 </script>
