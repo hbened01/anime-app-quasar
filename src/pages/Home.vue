@@ -25,8 +25,9 @@
 <script>
 import { defineComponent, ref } from "vue";
 import Card from "components/Card.vue";
-import { api } from "boot/axios";
 import Utils from "./../utils/Utils.vue";
+import { map, filter, findIndex } from "lodash";
+import { mapActions, mapState } from "vuex";
 
 export default defineComponent({
   name: "IndexPage",
@@ -39,31 +40,48 @@ export default defineComponent({
       data: [],
     };
   },
+  computed: {
+    ...mapState("jikanApp", ["databaseAnimeTop"]),
+  },
   setup() {
     return {
       expanded: ref(false),
     };
   },
   methods: {
+    ...mapActions("jikanApp", ["setDataTopAnimeByPage"]),
     getDataAnime() {
-      api
-        .get("/search/anime?q=naruto")
-        .then((response) => {
-          this.data = response.data.results;
-          this.sendNotify({
-            key: 0,
-            msg: "Data load sucessfully!!!",
-            type: "positive",
-            icon: "announcement",
-            position: "top",
+      const page = 0;
+      if (findIndex(this.databaseAnimeTop, ["page", page]) == -1) {
+        this.getListAnimeTopByPage(page)
+          .then((res) => {
+            this.data = map(res.data.top, (item) => {
+              item = { page, ...item };
+              return item;
+            });
+            // SAVE DATA INTO STORE:
+            this.setDataTopAnimeByPage({
+              page,
+              data: this.data,
+            });
+            this.sendNotify({
+              key: 0,
+              msg: "Data load sucessfully!!!",
+              type: "positive",
+              color: "positive",
+              icon: "announcement",
+              position: "top",
+            });
+          })
+          .catch((e) => {
+            this.sendNotify({
+              key: 1,
+              msg: `${e.response.data.message}`,
+            });
           });
-        })
-        .catch((e) => {
-          this.sendNotify({
-            key: 1,
-            msg: `${e.response.data.message}`,
-          });
-        });
+      } else {
+        this.data = filter(this.databaseAnimeTop, ["page", page])
+      }
     },
   },
   created() {
@@ -76,7 +94,7 @@ export default defineComponent({
           default:
             this.logout().then(() => {
               this.$router.push("/");
-            })
+            });
             break;
         }
       })
