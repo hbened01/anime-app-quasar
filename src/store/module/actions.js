@@ -1,3 +1,3 @@
-export const setUpdateVersion = (store, payload) => {
-  store.commit("SET_UPDATE_VERSION", payload);
+export const setUserData = (store, payload) => {
+  store.commit("SET_USER_DATA", payload);
 };

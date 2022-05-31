@@ -58,7 +58,7 @@ exports.login = async (req, res) => {
               ),
               httpOnly: true,
               signed: true,
-              maxAge: 1000 * 60 * 1, // would expire after 15 minutes
+              maxAge: 1000 * 60 * process.env.JWT_MAX_AGE, // would expire after 15 minutes
               sameSite: false,
             };
             // Set a cookie:
@@ -213,8 +213,10 @@ exports.statusToken = async (req, res) => {
         }
       );
     } catch (error) {
-      console.log("error");
-      // return next();
+      res.status(401).json({
+        success: false,
+        message: error,
+      });
     }
   } else {
     res.status(200).json({

@@ -9,7 +9,7 @@
           {{ appName }}
         </q-toolbar-title>
         <q-toolbar-title shrink>
-          <q-icon name="account_circle" size="md" /> {{ userName }}
+          <q-icon name="account_circle" size="md" /> {{ username }}
         </q-toolbar-title>
         <q-btn flat round dense icon="more_vert">
           <q-menu>
@@ -37,22 +37,30 @@
 
 <script>
 import { defineComponent } from "vue";
+import { mapGetters } from "vuex";
+import Utils from "./../utils/Utils.vue";
 
 export default defineComponent({
   name: "MainLayout",
   components: {},
   data() {
     return {
-      userName: "Humberto Benedito",
+      username: "",
       appName: "Anime Jikan",
     };
   },
-  setup() {
-    return {};
+  computed: {
+    ...mapGetters("jikanApp", ["getUserInfo"]),
+  },
+  mixins: [Utils],
+  created() {
+    this.username = this.getUserInfo.username
   },
   methods: {
     handleLogout() {
-      this.$router.push('/')
+      this.logout().then(() => {
+        this.$router.push("/");
+      })
     }
   }
 });

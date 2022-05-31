@@ -1,12 +1,6 @@
 <template>
   <q-page
-    class="
-      bg-primary
-      window-height window-width
-      row
-      justify-center
-      items-center
-    "
+    class="bg-primary window-height window-width row justify-center items-center"
   >
     <div class="column">
       <div class="row">
@@ -23,6 +17,7 @@
                 v-model="user"
                 type="text"
                 label="User"
+                @keyup.enter="handleLogin()"
               >
                 <template v-slot:append>
                   <q-icon name="account_circle" color="secondary" />
@@ -35,6 +30,7 @@
                 v-model="password"
                 type="password"
                 label="Password"
+                @keyup.enter="handleLogin()"
               >
                 <template v-slot:append>
                   <q-icon name="password" color="secondary" />
@@ -51,7 +47,7 @@
               class="full-width"
               label="Login"
               align="center"
-              @click.prevent="handleLogin"
+              @click.prevent="handleLogin()"
             />
           </q-card-actions>
           <q-card-section class="text-center q-pa-none">
@@ -77,8 +73,8 @@
 
 <script>
 import { defineComponent } from "vue";
-import { useQuasar } from "quasar";
-import { mapGetters, mapActions } from "vuex";
+import { mapActions } from "vuex";
+import Utils from "./../utils/Utils.vue";
 
 export default defineComponent({
   name: "Login",
@@ -88,21 +84,22 @@ export default defineComponent({
       password: "",
     };
   },
-  computed: {
-    ...mapGetters('jikanApp',['getState'])
-  },
+  computed: {},
   components: {},
-  setup() {
-    const $q = useQuasar();
-    return $q;
-  },
+  mixins: [Utils],
   methods: {
-    ...mapActions('jikanApp', ['setUpdateVersion']),
+    ...mapActions("jikanApp", ["setUserData"]),
     handleGoToRegister() {
       this.$router.push("/register");
     },
     async handleLogin() {
-      console.log()
+      if (this.name === "" || this.password === "") {
+        this.sendNotify({
+          key: 1,
+          msg: "Insert user and password",
+        });
+        return true;
+      }
       await this.$backend
         .post("/login", {
           user: this.user,
@@ -111,26 +108,28 @@ export default defineComponent({
         .then((res) => {
           switch (res.data.success) {
             case true:
-              this.$q.notify({
-                message: `${res.data.message}`,
-                color: "secondary",
-                icon: "thumb_up_alt",
+              // SEND MESSAGE
+              this.sendNotify({
+                key: 2,
+                msg: `${res.data.message}`,
               });
-              // SAVE TOKEN JWT:
-              this.$q.cookies.set("jwt_bk", res.data.token);
-              // this.$router.push("/home");
+              // SAVE DATA INTO STORE:
+              this.setUserData(res.data.params);
+              // GO TO HOME:
+              this.$router.push("/home");
               break;
             default:
-              this.$q.notify({
-                message: `${res.data.message}`,
-                icon: "report_problem",
+              this.sendNotify({
+                key: 1,
+                msg: `${res.data.message}`,
               });
               break;
           }
-        }).catch((e) => {
-          this.$q.notify({
-            message: `${e.response.data.message}`,
-            icon: "report_problem",
+        })
+        .catch((e) => {
+          this.sendNotify({
+            key: 1,
+            msg: `${e.response.data.message}`,
           });
         });
     },
