@@ -14,10 +14,14 @@ export default defineComponent({
       return await res;
     },
     async logout() {
-      const res = await this.$backend.get("/logout")
+      const res = await this.$backend.get("/logout");
       return await res;
     },
-    sendNotify(d={}) {
+    async getListAnimeTopByPage(pageNumber = 0) {
+      const res = await this.$api.get(`/top/anime/${pageNumber}`);
+      return await res;
+    },
+    sendNotify(d = {}) {
       switch (d?.key) {
         case 0:
           // NOTIFY CUSTOM ICON:
