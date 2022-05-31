@@ -6,7 +6,7 @@
           <q-avatar>
             <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
           </q-avatar>
-          {{ appName }}
+          {{ appName }} {{version}}
         </q-toolbar-title>
         <q-toolbar-title shrink>
           <q-icon name="account_circle" size="md" /> {{ username }}
@@ -37,7 +37,7 @@
 
 <script>
 import { defineComponent } from "vue";
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from "vuex";
 import Utils from "./../utils/Utils.vue";
 
 export default defineComponent({
@@ -51,6 +51,7 @@ export default defineComponent({
   },
   computed: {
     ...mapGetters("jikanApp", ["getUserInfo"]),
+    ...mapState("jikanApp", ["version"]),
   },
   mixins: [Utils],
   created() {
