@@ -6,7 +6,7 @@
           <q-avatar>
             <img src="https://cdn.quasar.dev/logo-v2/svg/logo-mono-white.svg" />
           </q-avatar>
-          {{ appName }} {{version}}
+          {{ appName }} {{ version }}
         </q-toolbar-title>
         <q-toolbar-title shrink>
           <q-icon name="account_circle" size="md" /> {{ username }}
@@ -36,33 +36,39 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { mapGetters, mapState } from "vuex";
-import Utils from "./../utils/Utils.vue";
+import { defineComponent, onMounted, computed, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
+import useUtils from "./../utils/useUtils.js";
 
 export default defineComponent({
   name: "MainLayout",
-  components: {},
-  data() {
-    return {
-      username: "",
-      appName: "Anime Jikan",
+  setup() {
+    const router = useRouter();
+    const route = useRoute();
+    const $store = useStore();
+    const { logout } = useUtils();
+
+    const handleLogout = () => {
+      logout().then(() => {
+        router.push("/");
+      });
     };
-  },
-  computed: {
-    ...mapGetters("jikanApp", ["getUserInfo"]),
-    ...mapState("jikanApp", ["version"]),
-  },
-  mixins: [Utils],
-  created() {
-    this.username = this.getUserInfo.username
-  },
-  methods: {
-    handleLogout() {
-      this.logout().then(() => {
-        this.$router.push("/");
-      })
-    }
+
+    const username = ref("");
+    const version = computed(() => $store.state.jikanApp.version);
+    const getUserInfo = computed(() => $store.getters["jikanApp/getUserInfo"]);
+
+    onMounted(() => {
+      username.value = getUserInfo?.value?.username;
+    });
+
+    return {
+      version,
+      username,
+      appName: "Anime Jikan",
+      handleLogout
+    };
   }
 });
 </script>

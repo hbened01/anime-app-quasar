@@ -72,68 +72,71 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { mapActions } from "vuex";
-import Utils from "./../utils/Utils.vue";
+import { defineComponent, ref, getCurrentInstance } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useStore } from "vuex";
+import useUtils from "./../utils/useUtils.js";
 
 export default defineComponent({
   name: "Login",
-  data() {
-    return {
-      user: "",
-      password: "",
+  setup(props, context) {
+    const user = ref("");
+    const password = ref("");
+    const app = getCurrentInstance();
+    const router = useRouter();
+    const route = useRoute();
+    const { sendNotify, login } = useUtils();
+    const $store = useStore();
+
+    const handleGoToRegister = () => {
+      router.push("/register");
     };
-  },
-  computed: {},
-  components: {},
-  mixins: [Utils],
-  methods: {
-    ...mapActions("jikanApp", ["setUserData"]),
-    handleGoToRegister() {
-      this.$router.push("/register");
-    },
-    async handleLogin() {
-      if (this.name === "" || this.password === "") {
-        this.sendNotify({
+
+    const handleLogin = async () => {
+      if (user.value === "" || password.value === "") {
+        sendNotify({
           key: 1,
-          msg: "Insert user and password",
+          msg: "Insert user and password"
         });
         return true;
       }
-      await this.$backend
-        .post("/login", {
-          user: this.user,
-          password: this.password,
-        })
+      login(user.value, password.value)
         .then((res) => {
           switch (res.data.success) {
             case true:
               // SEND MESSAGE
-              this.sendNotify({
+              sendNotify({
                 key: 2,
-                msg: `${res.data.message}`,
+                msg: `${res.data.message}`
               });
               // SAVE DATA INTO STORE:
-              this.setUserData(res.data.params);
+              $store.dispatch("jikanApp/setUserData", res?.data?.params);
               // GO TO HOME:
-              this.$router.push("/home");
+              router.push("/home");
               break;
             default:
-              this.sendNotify({
+              sendNotify({
                 key: 1,
-                msg: `${res.data.message}`,
+                msg: `${res.data.message}`
               });
               break;
           }
         })
         .catch((e) => {
-          this.sendNotify({
+          sendNotify({
             key: 1,
-            msg: `${e.response.data.message}`,
+            msg: `${e.message}`
           });
         });
-    },
-  },
+    };
+
+    return {
+      user,
+      password,
+      handleLogin,
+      handleGoToRegister
+    };
+  }
 });
 </script>
 

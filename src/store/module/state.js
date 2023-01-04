@@ -1,6 +1,6 @@
 export default function () {
   return {
-    version: "1.0",
+    version: "4.0",
     user: "",
     userId: "",
     username: "",

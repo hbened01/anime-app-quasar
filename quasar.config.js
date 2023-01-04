@@ -31,7 +31,7 @@ module.exports = configure(function (/* ctx */) {
     boot: ["i18n", "axios"],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#css
-    css: ["app.scss"],
+    css: ["app.scss", "tailwind.css"],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -66,7 +66,7 @@ module.exports = configure(function (/* ctx */) {
       env: require("dotenv").config().parsed,
       // env: {
       //   APP_BACKEND_PATH: "http://localhost:3000/",
-      //   APP_API_JIKAN: "https://api.jikan.moe/v3/",
+      //   APP_API_JIKAN: "https://api.jikan.moe/v4/",
       // },
       // rawDefine: {}
       // ignorePublicFolder: true,

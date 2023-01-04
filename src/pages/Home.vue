@@ -1,14 +1,20 @@
 <template>
   <q-page class="flex flex-center">
-    <div class="row q-pa-sm items-stretch">
-      <card class="q-ma-2" v-for="(item, key) in data" :key="key" :item="item">
+    <div class="row q-pa-sm items-stretch justify-around">
+      <card
+        class="q-ma-2 my-5"
+        v-for="(item, key) in data"
+        :key="key"
+        :item="item"
+      >
         <template v-slot:card-img>
           <q-img
-            :src="item.image_url"
+            :src="item?.images?.jpg?.image_url"
             fit="cover"
             loading="lazy"
             spinner-color="white"
             height="300px"
+            class="rounded"
           />
         </template>
         <template v-slot:card-title>
@@ -23,87 +29,93 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
-import Card from "components/Card.vue";
-import Utils from "./../utils/Utils.vue";
 import { map, filter, findIndex } from "lodash";
-import { mapActions, mapState } from "vuex";
+import { defineComponent, ref, computed, onMounted, onUpdated } from "vue";
+import { useStore } from "vuex";
+import { useRouter, useRoute } from "vue-router";
+import useUtils from "./../utils/useUtils.js";
+import Card from "components/Card.vue";
 
 export default defineComponent({
   name: "IndexPage",
   components: {
-    Card,
-  },
-  mixins: [Utils],
-  data() {
-    return {
-      data: [],
-    };
-  },
-  computed: {
-    ...mapState("jikanApp", ["databaseAnimeTop"]),
+    Card
   },
   setup() {
-    return {
-      expanded: ref(false),
-    };
-  },
-  methods: {
-    ...mapActions("jikanApp", ["setDataTopAnimeByPage"]),
-    getDataAnime() {
-      const page = 0;
-      if (findIndex(this.databaseAnimeTop, ["page", page]) == -1) {
-        this.getListAnimeTopByPage(page)
+    const data = ref([]);
+    const router = useRouter();
+    const route = useRoute();
+    const $store = useStore();
+    const { sendNotify, getListAnimeTopByPage, validateStatus, logout } =
+      useUtils();
+    const databaseAnimeTop = computed(
+      () => $store.state.jikanApp.databaseAnimeTop
+    );
+    const getDataAnime = () => {
+      const page = 1;
+      if (findIndex(databaseAnimeTop?.value, ["page", page]) == -1) {
+        getListAnimeTopByPage(page)
           .then((res) => {
-            this.data = map(res.data.top, (item) => {
+            data.value = map(res?.data?.data, (item) => {
               item = { page, ...item };
               return item;
             });
             // SAVE DATA INTO STORE:
-            this.setDataTopAnimeByPage({
+            $store.dispatch("jikanApp/setDataTopAnimeByPage", {
               page,
-              data: this.data,
+              data: data?.value
             });
-            this.sendNotify({
+            sendNotify({
               key: 0,
               msg: "Data load sucessfully!!!",
               type: "positive",
               color: "positive",
               icon: "announcement",
-              position: "top",
+              position: "top"
             });
           })
           .catch((e) => {
-            this.sendNotify({
+            sendNotify({
               key: 1,
-              msg: `${e.response.data.message}`,
+              msg: `${e.message}`
             });
           });
       } else {
-        this.data = filter(this.databaseAnimeTop, ["page", page])
+        data.value = filter(databaseAnimeTop?.value, ["page", page]);
       }
-    },
-  },
-  created() {
-    this.validateStatus()
-      .then((res) => {
-        switch (res.data.status) {
-          case true:
-            this.getDataAnime();
-            break;
-          default:
-            this.logout().then(() => {
-              this.$router.push("/");
-            });
-            break;
-        }
-      })
-      .catch((e) => {
-        this.sendNotify({
-          key: 1,
-          msg: `${e.response.data.message}`,
+    };
+
+    // LIFE CICLE:
+    onMounted(() => getDataAnime());
+
+    onUpdated(() => {
+      validateStatus()
+        .then((res) => {
+          switch (res?.data?.status) {
+            case true:
+              getDataAnime();
+              break;
+            default:
+              logout().then(() => {
+                router.push("/");
+              });
+              break;
+          }
+        })
+        .catch((e) => {
+          this.sendNotify({
+            key: 1,
+            msg: `${e.message}`
+          });
         });
-      });
-  },
+    });
+
+    return {
+      data,
+      expanded: ref(false),
+      getDataAnime,
+      databaseAnimeTop
+    };
+  }
 });
 </script>

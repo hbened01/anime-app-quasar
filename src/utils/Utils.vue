@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
 import { defineComponent } from "vue";
 import { useQuasar } from "quasar";
 
@@ -17,8 +17,10 @@ export default defineComponent({
       const res = await this.$backend.get("/logout");
       return await res;
     },
-    async getListAnimeTopByPage(pageNumber = 0) {
-      const res = await this.$api.get(`/top/anime/${pageNumber}`);
+    async getListAnimeTopByPage(pageNumber = 0, itemsPerPage = 10) {
+      const res = await this.$api.get(
+        `/top/anime?page=${pageNumber}&limit=${itemsPerPage}`
+      );
       return await res;
     },
     sendNotify(d = {}) {
@@ -30,14 +32,14 @@ export default defineComponent({
             icon: d?.icon,
             color: d?.color,
             type: d?.type,
-            position: d?.position,
+            position: d?.position
           });
           break;
         case 1:
           // NOTIFY WHEN ERROR CASE:
           this.$q.notify({
             message: d?.msg,
-            icon: "report_problem",
+            icon: "report_problem"
           });
           break;
         case 2:
@@ -45,11 +47,11 @@ export default defineComponent({
           this.$q.notify({
             message: d?.msg,
             color: "secondary",
-            icon: "thumb_up_alt",
+            icon: "thumb_up_alt"
           });
           break;
       }
-    },
-  },
+    }
+  }
 });
-</script>
+</script> -->

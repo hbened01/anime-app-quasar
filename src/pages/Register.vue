@@ -82,53 +82,53 @@
 </template>
 
 <script>
-import { defineComponent } from "vue";
-import { useQuasar } from "quasar";
+import { defineComponent, ref } from "vue";
+import { useRouter } from "vue-router";
+import useUtils from "./../utils/useUtils.js";
 
 export default defineComponent({
-  name: "Login",
-  data() {
-    return {
-      user: "",
-      name: "",
-      password: "",
-    };
-  },
+  name: "Register",
   setup() {
-    const $q = useQuasar();
-    return $q;
-  },
-  methods: {
-    async handleRegister() {
-      this.$backend
-        .post("/register", {
-          user: this.user,
-          name: this.name,
-          password: this.password,
-        })
-        .then((res) => {
-          switch (res.data.success) {
-            case true:
-              this.$q.notify({
-                message: `${res.data.message}`,
-                color: "secondary",
-                icon: "thumb_up_alt",
-              });
-              this.$router.push("/");
-              break;
-            default:
-              this.$q.notify({
-                message: `${res.data.message}`,
-                icon: "report_problem",
-              });
-              break;
-          }
-        });
-    },
-    async handleGoToLogin() {
-      this.$router.push("/");
-    },
-  },
+    const router = useRouter();
+    const { sendNotify, register } = useUtils();
+    const user = ref("");
+    const name = ref("");
+    const password = ref("");
+
+    const handleRegister = () => {
+      register({
+        user: user.value,
+        name: name.value,
+        password: password.value
+      }).then((res) => {
+        switch (res.data.success) {
+          case true:
+            sendNotify({
+              key: 2,
+              msg: `${res.data.message}`
+            });
+            router.push("/");
+            break;
+          default:
+            sendNotify({
+              key: 1,
+              message: `${res.data.message}`
+            });
+            break;
+        }
+      });
+    };
+    const handleGoToLogin = () => {
+      router.push("/");
+    };
+    return {
+      user,
+      name,
+      password,
+      handleRegister,
+      handleGoToLogin
+    };
+  }
 });
 </script>
 
