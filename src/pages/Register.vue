@@ -96,11 +96,7 @@ export default defineComponent({
     const password = ref("");
 
     const handleRegister = () => {
-      register({
-        user: user.value,
-        name: name.value,
-        password: password.value
-      })
+      register(user.value, name.value, password.value)
         .then((res) => {
           switch (res.data.success) {
             case true:
