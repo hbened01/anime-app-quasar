@@ -100,23 +100,30 @@ export default defineComponent({
         user: user.value,
         name: name.value,
         password: password.value
-      }).then((res) => {
-        switch (res.data.success) {
-          case true:
-            sendNotify({
-              key: 2,
-              msg: `${res.data.message}`
-            });
-            router.push("/");
-            break;
-          default:
-            sendNotify({
-              key: 1,
-              message: `${res.data.message}`
-            });
-            break;
-        }
-      });
+      })
+        .then((res) => {
+          switch (res.data.success) {
+            case true:
+              sendNotify({
+                key: 2,
+                msg: `${res.data.message}`
+              });
+              router.push("/");
+              break;
+            default:
+              sendNotify({
+                key: 1,
+                message: `${res.data.message}`
+              });
+              break;
+          }
+        })
+        .catch((e) => {
+          sendNotify({
+            key: 1,
+            msg: `${e.message}`
+          });
+        });
     };
     const handleGoToLogin = () => {
       router.push("/");
