@@ -17,11 +17,26 @@
             class="rounded"
           />
         </template>
+        <template v-slot:card-icon-img-text>
+          Rank <q-icon name="fa-solid fa-hashtag" />
+          {{ item?.rank }}
+        </template>
         <template v-slot:card-title>
-          {{ item.title }}
+          {{ item?.title }}
+        </template>
+        <template v-slot:card-overline>
+          {{
+            item?.genres
+              ?.map((genre) => genre?.name)
+              ?.slice(0, 2)
+              ?.join("|") ?? "not genres"
+          }}
+        </template>
+        <template v-slot:card-rating>
+          {{ item?.rating }}
         </template>
         <template v-slot:card-synopsis>
-          {{ item.synopsis }}
+          {{ item?.synopsis }}
         </template>
       </card>
     </div>
