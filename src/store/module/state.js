@@ -4,7 +4,7 @@ export default function () {
     user: "",
     userId: "",
     username: "",
-    pageNumber: 0,
+    pagination: {},
     databaseAnimeTop: new Array(),
   };
 }

@@ -25,12 +25,27 @@
         </template>
       </card>
     </div>
+    <div>
+      <q-pagination
+        class="mb-10"
+        v-model="current"
+        :max="pagination?.last_visible_page || 0"
+        :max-pages="pagination?.items?.per_page || 0"
+        direction-links
+        push
+        color="teal"
+        active-design="push"
+        active-color="primary"
+        :ellipses="true"
+        @update:model-value="handleUpdatePage"
+      />
+    </div>
   </q-page>
 </template>
 
 <script>
 import { map, filter, findIndex } from "lodash";
-import { defineComponent, ref, computed, onMounted, onUpdated } from "vue";
+import { defineComponent, ref, computed, onBeforeMount, onMounted } from "vue";
 import { useStore } from "vuex";
 import { useRouter, useRoute } from "vue-router";
 import useUtils from "./../utils/useUtils.js";
@@ -51,8 +66,13 @@ export default defineComponent({
     const databaseAnimeTop = computed(
       () => $store.state.jikanApp.databaseAnimeTop
     );
+    const current = computed(
+      () => $store.state.jikanApp.pagination?.current_page
+    );
+    const pagination = computed(() => $store.state.jikanApp.pagination);
     const getDataAnime = () => {
-      const page = 1;
+      const page = current?.value || 1;
+      console.log("aca");
       if (findIndex(databaseAnimeTop?.value, ["page", page]) == -1) {
         getListAnimeTopByPage(page)
           .then((res) => {
@@ -60,9 +80,13 @@ export default defineComponent({
               item = { page, ...item };
               return item;
             });
-            // SAVE DATA INTO STORE:
+            // SAVE DATA PAGINATION INTO STORE:
+            $store.dispatch(
+              "jikanApp/setPaginationData",
+              res?.data?.pagination
+            );
+            // SAVE DATA ANIME INTO STORE:
             $store.dispatch("jikanApp/setDataTopAnimeByPage", {
-              page,
               data: data?.value
             });
             sendNotify({
@@ -85,10 +109,14 @@ export default defineComponent({
       }
     };
 
-    // LIFE CICLE:
-    onMounted(() => getDataAnime());
+    const handleUpdatePage = (value) => {
+      // SAVE CURRENT PAGE INTO STORE:
+      $store.dispatch("jikanApp/setCurrentPage", value);
+      // VALIDATE STATUS AND GET DATA:
+      validateStatusCookie();
+    };
 
-    onUpdated(() => {
+    const validateStatusCookie = () => {
       validateStatus()
         .then((res) => {
           switch (res?.data?.status) {
@@ -103,18 +131,31 @@ export default defineComponent({
           }
         })
         .catch((e) => {
-          this.sendNotify({
+          sendNotify({
             key: 1,
             msg: `${e.message}`
           });
         });
+    };
+
+    // LIFE CICLE FUNCTIONS:
+    onBeforeMount(() => {
+      console.info("OnMounted");
+      validateStatusCookie();
+    });
+    onMounted(() => {
+      console.info("Mounted");
+      getDataAnime();
     });
 
     return {
       data,
+      current,
+      pagination,
       expanded: ref(false),
       getDataAnime,
-      databaseAnimeTop
+      databaseAnimeTop,
+      handleUpdatePage
     };
   }
 });

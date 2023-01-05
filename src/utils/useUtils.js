@@ -1,7 +1,7 @@
 //useUtils.js
 //import ref function to define reactive properties
 import { ref, getCurrentInstance } from "vue";
-import { useQuasar } from "quasar";
+import { useQuasar, getCssVar } from "quasar";
 export default function useUtils() {
   const $q = ref(useQuasar());
   const app = getCurrentInstance();
@@ -73,6 +73,7 @@ export default function useUtils() {
 
   return {
     login,
+    colors: getCssVar, // colors("primary");
     logout,
     register,
     sendNotify,

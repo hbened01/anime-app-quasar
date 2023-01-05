@@ -6,6 +6,13 @@ export const SET_USER_DATA = (state, payload) => {
 };
 
 export const SET_DATA_TOP_ANIME_BY_PAGE = (state, payload) => {
-  state.pageNumber = payload.page;
   state.databaseAnimeTop = [...payload.data, ...state.databaseAnimeTop];
+};
+
+export const SET_PAGINATION_DATA = (state, payload) => {
+  state.pagination = payload;
+};
+
+export const SET_CURRENT_PAGE = (state, payload) => {
+  state.pagination.current_page = payload;
 };
